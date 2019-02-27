@@ -109,3 +109,117 @@ public class UserController {
     }
 }
 ```
+
+## 使用 Thymeleaf 模板引擎
+
+Spring Boot支持多种模版引擎包括：
+
+1. FreeMarker
+2. Groovy
+3. Thymeleaf(官方推荐)
+4. Mustache
+
+Thymeleaf是一款用于渲染XML/XHTML/HTML5内容的模板引擎。类似JSP，Velocity，FreeMaker等，它也可以轻易的与Spring MVC等Web框架进行集成作为Web应用的模板引擎。与其它模板引擎相比，Thymeleaf最大的特点是能够直接在浏览器中打开并正确显示模板页面，而不需要启动整个Web应用。它的功能特性如下：
+
+* Spring MVC中@Controller中的方法可以直接返回模板名称，接下来Thymeleaf模板引擎会自动进行渲染
+* 模板中的表达式支持Spring表达式语言（Spring EL)
+* 表单支持，并兼容Spring MVC的数据绑定与验证机制
+* 国际化支持
+
+### 引入依赖
+
+spring-boot-starter-thymeleaf会自动包含spring-boot-starter-web，所以我们就不需要单独引入web依赖了
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+```
+
+### 编写controller
+
+```java
+@RestController
+@RequestMapping("/learn")
+public class LearnResourceController {
+    @RequestMapping("/")
+    public ModelAndView index(){
+        List<LearnResouce> learnList =new ArrayList<LearnResouce>();
+        LearnResouce bean =new LearnResouce("官方参考文档","Spring Boot Reference Guide","http://docs.spring.io/spring-boot/docs/1.5.1.RELEASE/reference/htmlsingle/#getting-started-first-application");
+        learnList.add(bean);
+        ModelAndView modelAndView = new ModelAndView("/index");
+        modelAndView.addObject("learnList", learnList);
+        return modelAndView;
+    }
+}
+```
+
+### 编写 html 模板文件
+
+通过xmlns:th="http://www.thymeleaf.org" 命令空间，将静态页面转换为动态的视图，需要进行动态处理的元素将使用"th:"前缀。
+
+```html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>learn Resources</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+
+<div style="text-align: center;margin:0 auto;width: 1000px; ">
+  <h1>学习资源大奉送</h1>
+  <table width="100%" border="1" cellspacing="1" cellpadding="0">
+    <tr>
+      <td>作者</td>
+      <td>教程名称</td>
+      <td>地址</td>
+    </tr>
+    <!--/*@thymesVar id="learnList" type=""*/-->
+    <tr th:each="learn : ${learnList}">
+      <!--/*@thymesVar id="author" type=""*/-->
+      <td th:text="${learn.author}"></td>
+      <td th:text="${learn.title}"></td>
+      <td><a th:href="${learn.url}" target="_blank">点我</a></td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>
+```
+
+LearnResourceController 对应访问:http://localhost:9090/learn/
+
+
+
+### 附录:Thymeleaf的默认参数配置
+
+```
+ THYMELEAF (ThymeleafAutoConfiguration)
+#开启模板缓存（默认值：true）
+spring.thymeleaf.cache=true 
+#Check that the template exists before rendering it.
+spring.thymeleaf.check-template=true 
+#检查模板位置是否正确（默认值:true）
+spring.thymeleaf.check-template-location=true
+#Content-Type的值（默认值：text/html）
+spring.thymeleaf.content-type=text/html
+#开启MVC Thymeleaf视图解析（默认值：true）
+spring.thymeleaf.enabled=true
+#模板编码
+spring.thymeleaf.encoding=UTF-8
+#要被排除在解析之外的视图名称列表，用逗号分隔
+spring.thymeleaf.excluded-view-names=
+#要运用于模板之上的模板模式。另见StandardTemplate-ModeHandlers(默认值：HTML5)
+spring.thymeleaf.mode=HTML5
+#在构建URL时添加到视图名称前的前缀（默认值：classpath:/templates/）
+spring.thymeleaf.prefix=classpath:/templates/
+#在构建URL时添加到视图名称后的后缀（默认值：.html）
+spring.thymeleaf.suffix=.html
+#Thymeleaf模板解析器在解析器链中的顺序。默认情况下，它排第一位。顺序从1开始，只有在定义了额外的TemplateResolver Bean时才需要设置这个属性。
+spring.thymeleaf.template-resolver-order=
+#可解析的视图名称列表，用逗号分隔
+spring.thymeleaf.view-names=
+```
+
