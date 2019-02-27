@@ -223,3 +223,12 @@ spring.thymeleaf.template-resolver-order=
 spring.thymeleaf.view-names=
 ```
 
+## 静态资源
+
+### 默认资源映射
+
+其中默认配置的 /** 映射到 /static （或/public、/resources、/META-INF/resources）
+
+优先级顺序为：META-INF/resources > resources > static > public
+
+注意:META-INF, resources, static, public 需放在 src/main/resources目录下
