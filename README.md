@@ -50,3 +50,62 @@ server.port=9090
 
 application.properties提供自定义属性的支持，这样我们就可以把一些常量配置在这里：
 
+```
+com.example.name=Sicmatr1x
+```
+
+然后直接在要使用的地方通过注解@Value(value=”${config.name}”)就可以绑定到你想要的属性上面:
+
+```java
+  @Value("${com.example.name}")
+  private  String name;
+
+  @RequestMapping("/")
+  public String index(){
+    return name + ":Hello Spring Boot";
+  }
+```
+
+或者使用自定义属性:
+
+建一个ConfigBean.java类，顶部需要使用注解@ConfigurationProperties(prefix = “com.dudu”)来指明使用哪个
+
+```java
+@Configuration
+@ConfigurationProperties(prefix = "com.md") 
+@PropertySource("classpath:test.properties")
+public class ConfigTestBean {
+    private String name;
+    private String want;
+    // 省略getter和setter
+}
+```
+
+还需要在spring Boot入口类加上@EnableConfigurationProperties并指明要加载哪个bean，如果不写ConfigBean.class，在bean类那边添加
+
+```java
+@RestController
+@EnableConfigurationProperties({ConfigBean.class})
+@SpringBootApplication
+public class SpringbootdemoApplication {
+    //...
+}
+```
+
+最后在Controller中引入ConfigBean使用即可:
+
+```java
+@RestController
+public class UserController {
+
+    @Value("${com.example.name}")
+    private  String name;
+    @Value("${com.example.want}")
+    private  String want;
+
+    @RequestMapping("/")
+    public String index(){
+        return name+","+want;
+    }
+}
+```

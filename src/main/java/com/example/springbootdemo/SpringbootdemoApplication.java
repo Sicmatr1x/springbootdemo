@@ -1,20 +1,27 @@
 package com.example.springbootdemo;
 
+import com.example.springbootdemo.beans.ConfigBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 // @RestController注解等价于@Controller+@ResponseBody的结合，使用这个注解的类里面的方法都以json格式输出。
 @RestController
+@EnableConfigurationProperties({ConfigBean.class})
 // @SpringBootApplication是Sprnig Boot项目的核心注解，主要目的是开启自动配置。
 @SpringBootApplication
 public class SpringbootdemoApplication {
 
-  @RequestMapping("/")
-  public String index(){
-    return "Hello Spring Boot";
-  }
+//  @Value("${com.example.name}")
+//  private  String name;
+//
+//  @RequestMapping("/")
+//  public String index(){
+//    return name + ":Hello Spring Boot";
+//  }
 
   /**
    * 主要作用是作为项目启动的入口
