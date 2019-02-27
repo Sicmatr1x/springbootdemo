@@ -232,3 +232,50 @@ spring.thymeleaf.view-names=
 优先级顺序为：META-INF/resources > resources > static > public
 
 注意:META-INF, resources, static, public 需放在 src/main/resources目录下
+
+## 默认日志 logback配置
+
+### maven依赖
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-logging</artifactId>
+</dependency>
+```
+
+实际开发中我们不需要直接添加该依赖，你会发现spring-boot-starter其中包含了 spring-boot-starter-logging，该依赖内容就是 Spring Boot 默认的日志框架 logback。而博主这次项目的例子是基于上一篇的，工程中有用到了Thymeleaf，而Thymeleaf依赖包含了spring-boot-starter，最终我只要引入Thymeleaf即可
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+```
+
+### 控制台输出
+
+日志级别从低到高分为TRACE < DEBUG < INFO < WARN < ERROR < FATAL，如果设置为WARN，则低于WARN的信息都不会输出。
+
+启动您的应用程序–debug标志来启用“调试”模式, 以下两种方式皆可:
+1. 在运行命令后加入--debug标志，如：$ java -jar springTest.jar --debug
+2. 在 application.properties中配置 ```debug=true```，该属性置为true的时候，核心 Logger（包含嵌入式容器、hibernate、spring）会输出更多内容，但是你自己应用的日志并不会输出为DEBUG级别。
+
+### 文件输出
+
+控制台输出之外的日志文件，则需在 application.properties中设置以下两个中的一个:
+1. logging.file，设置文件，可以是绝对路径，也可以是相对路径。如：```logging.file=my.log```
+2. logging.path，设置目录，会在该目录下创建spring.log文件，并写入日志内容，如：```logging.path=/var/log```
+
+默认情况下，日志文件的大小达到 10MB 时会切分一次，产生新的日志文件，默认级别为：ERROR、WARN、INFO
+
+### 级别控制
+
+所有支持的日志记录系统都可以在 Spring环境中设置记录级别:
+
+application.properties:
+
+```
+logging.level.com.example=DEBUG
+logging.level.root=WARN
+```
