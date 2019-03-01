@@ -1,9 +1,17 @@
 package com.example.springbootdemo.controller;
 
 import com.example.springbootdemo.beans.LearnResouce;
+import com.example.springbootdemo.service.LearnResourceService;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.stereotype.Controller;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -42,5 +50,77 @@ public class LearnResourceController {
     ModelAndView modelAndView = new ModelAndView("/index");
     modelAndView.addObject("learnList", learnList);
     return modelAndView;
+  }
+
+  @Autowired
+  private LearnResourceService learnService;
+
+  private ObjectMapper objectMapper = new ObjectMapper();
+
+  @GetMapping(value = "/resource/{id}")
+  public LearnResouce getLearnById(@PathVariable("id") Long id, HttpServletResponse response){
+    LearnResouce learnResouce = learnService.queryLearnResouceById(id);
+    System.out.println(id + ":" + learnResouce);
+    return learnResouce;
+  }
+
+  /**
+   * 新添教程
+   * @param request
+   * @param response
+   */
+  @PostMapping(value = "/add")
+  public LearnResouce addLearn(HttpServletRequest request, HttpServletResponse response){
+    String author = request.getParameter("author");
+    String title = request.getParameter("title");
+    String url = request.getParameter("url");
+    LearnResouce learnResouce = new LearnResouce();
+    learnResouce.setAuthor(author);
+    learnResouce.setTitle(title);
+    learnResouce.setUrl(url);
+    int index=learnService.add(learnResouce);
+    if(index>0){
+     return learnResouce;
+    }else{
+      response.setStatus(500);
+      return null;
+    }
+  }
+  /**
+   * 修改教程
+   * @param request
+   * @param response
+   */
+  @PostMapping(value = "/update/{id}")
+  public LearnResouce updateLearn(@PathVariable("id") Long id, HttpServletRequest request , HttpServletResponse response){
+    LearnResouce learnResouce = learnService.queryLearnResouceById(Long.valueOf(id));
+    String author = request.getParameter("author");
+    String title = request.getParameter("title");
+    String url = request.getParameter("url");
+    learnResouce.setAuthor(author);
+    learnResouce.setTitle(title);
+    learnResouce.setUrl(url);
+    int index = learnService.update(learnResouce);
+    System.out.println("修改结果=" + index);
+    if(index>0){
+      return learnResouce;
+    }else{
+      response.setStatus(500);
+      return null;
+    }
+  }
+  /**
+   * 删除教程
+   * @param request
+   */
+  @PostMapping(value="/delete/{id}")
+  public String deleteUser(@PathVariable("id") String ids, HttpServletRequest request){
+    //删除操作
+    int index = learnService.deleteByIds(ids.split(","));
+    if(index>0){
+      return "success";
+    }else{
+      return "fail";
+    }
   }
 }

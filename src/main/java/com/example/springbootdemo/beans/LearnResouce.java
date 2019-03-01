@@ -1,14 +1,27 @@
 package com.example.springbootdemo.beans;
 
 public class LearnResouce {
+  private Long id;
   private String author;
   private String title;
   private String url;
+
+  public LearnResouce() {
+
+  }
 
   public LearnResouce(String author, String title, String url) {
     this.author = author;
     this.title = title;
     this.url = url;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
   public String getAuthor() {
@@ -33,5 +46,15 @@ public class LearnResouce {
 
   public void setUrl(String url) {
     this.url = url;
+  }
+
+  @Override
+  public String toString() {
+    return "LearnResouce{" +
+        "id=" + id +
+        ", author='" + author + '\'' +
+        ", title='" + title + '\'' +
+        ", url='" + url + '\'' +
+        '}';
   }
 }
